@@ -10,7 +10,9 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Joma's Starter Template for NodeJs Web App</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ca8ad9a85c161643ea297310602523bc"></script>
+
+    <title>Chan's Starter Template for NodeJs Web App</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -31,7 +33,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="#">Projects</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -46,13 +48,91 @@
     <div class="container">
 
       <div class="starter-template">
-        <h1>Joma is a Douche</h1>
-        <img id="headshot" src="headshot.jpg" alt="Mountain View">
-        <p class="lead">He will never get a girlfriend.<br> Not with that face.</p>
+        <h2>Joma is a Douche..</h2>
+        <div id="map" style="width:500px;height:400px;"></div>
+        <input type="text" id="distance_input" placeholder="radius-distance">
+	meters
+		<button id="action">apply</button>
       </div>
 
     </div><!-- /.container -->
 
+
+    <script>
+		// Map Initializing
+		var container = document.getElementById('map');
+		var options = {
+			center: new daum.maps.LatLng(37.498208, 127.027763),
+			level: 3
+		};
+		var map = new daum.maps.Map(container, options);
+		var circle;
+		var marker;
+		var curPos;	
+		marker = setMarker(new daum.maps.LatLng(37.498208, 127.027763)); // set initial marker
+
+		// geolocation part
+		(function getLocation() {
+		    if (navigator.geolocation) {
+		        navigator.geolocation.getCurrentPosition(showPosition);
+		    } else { 
+		        alert("Geolocation is not supported by this browser.");
+		    }
+		})(); // anonymous function
+
+		function showPosition(position) {
+			// set a designated point
+			var moveLatLon = new daum.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			// Move the view of map to designated point
+			map.panTo(moveLatLon);
+			// Renew the marker too
+			marker = setMarker(new daum.maps.LatLng(position.coords.latitude, position.coords.longitude));
+			// test
+			console.log(position.coords.latitude);
+			console.log(position.coords.longitude)
+		}
+
+ 		daum.maps.event.addListener(map, 'click', function(mouseEvent) {
+ 			console.log(marker);
+ 			if(marker != undefined){
+				marker.setMap(null); // remove the past one
+			}
+ 			marker = setMarker(mouseEvent.latLng);
+ 		}); // set marker at clicked location with listener.
+
+		action.onclick = function(){
+			//circle.setMap(null); // initialize and remove.
+			if(circle != undefined){
+				//console.log('true');
+				circle.setMap(null);
+			}
+			circle = drawCircle(curPos, distance_input.value);
+		} 
+
+		function setMarker(position){
+			curPos = position;
+			var marker = new daum.maps.Marker({ 
+    			position: position
+			});
+			marker.setMap(map);
+			return marker;
+		}
+
+		function drawCircle(pCenter, pDistance){
+			var circle = new daum.maps.Circle({
+    			center : pCenter,  // circle's center
+    			radius: pDistance, // radius of the circle
+    			strokeWeight: 2, 
+    			strokeColor: '#bf2431', 
+    			strokeOpacity: 0.8, 
+   				strokeStyle: 'solid', // line style
+   				fillColor: '#f9dbe0', // fill color
+    			fillOpacity: 0.5  // 
+			});
+			circle.setMap(map);
+			return circle;
+		}
+	</script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
